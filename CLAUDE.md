@@ -194,17 +194,25 @@ print(result)
 
 ### Discovery examples (don't skip)
 
+**IMPORTANT**: Tool discovery methods (`listTools`, `searchTools`, `getToolDetails`) are NOT available through the Python SDK `execute_tool` method. You will get "Tool not found" errors.
+
+**Use Datagen MCP tools instead for discovery:**
+- Use `mcp__datagen__searchTools` to find tools by functionality
+- Use `mcp__datagen__getToolDetails` to get tool schemas
+- Then use the SDK's `execute_tool` to execute the actual tool
+
 ```python
 from datagen_sdk import DatagenClient
 
 client = DatagenClient()
 
-# List all tools
-tools = client.execute_tool("listTools")
+# ❌ THESE DO NOT WORK IN SDK:
+# tools = client.execute_tool("listTools")  # Error: Tool not found
+# matches = client.execute_tool("searchTools", {"query": "send email"})  # Error: Tool not found
+# details = client.execute_tool("getToolDetails", {"tool_name": "..."})  # Error: Tool not found
 
-# Search by intent
-matches = client.execute_tool("searchTools", {"query": "send email"})
-
-# Get schema for a tool alias
-details = client.execute_tool("getToolDetails", {"tool_name": "mcp_Gmail_gmail_send_email"})
+# ✅ USE MCP TOOLS FOR DISCOVERY, then SDK for execution:
+# 1. Use mcp__datagen__searchTools via MCP to find the tool
+# 2. Use mcp__datagen__getToolDetails via MCP to get schema
+# 3. Use SDK to execute: client.execute_tool("mcp_Gmail_gmail_send_email", {...})
 ```
